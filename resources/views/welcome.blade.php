@@ -1,47 +1,52 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
+@extends('layouts.main')
 
-        
-    </head>
-    <body class="antialiased">
-        @if(10 > 5)
-            <p>true</p>
-        @endif
+@section('title', 'Events')
 
-        <p>{{ $nome }}</p>
+@section('content')
 
 
-        @if($nome == 'Marcos')
-        <p>O nome é {{ $nome }} e tem {{ $idade }} </p>
-        @else
-        <p>O nome não é Marcos</p>
-        @endif
+<div id="search-container" class="col-md-12">
+    <h1>Busque um evento</h1>
+    <form action="/" method="GET">
+        <input type="text" id="search" name="search" class="form-control" placeholder="Procurar...">
 
+    </form>
+</div>
 
-        @for($i = 0; $i < count($arr); $i++)
-            <p>{{ $arr[$i] }} - {{ $i }} </p>
-            @if($i ==2)
-            <p>o i é 2</p>
+<div id="events-container" class="col-md-12">
+    @if($search)
+        <h2>Buscando por: {{ $search }}</h2>
+    @else
+        <h2>Próximos eventos</h2>
+        <p class="subtitle">Veja os eventos dos próximos dias</p>
+    @endif
+    
+    <div id="cards-container" class="row">
+        @foreach($events as $event)
+        <div class="card col-md-3">
+            @if($event->image != '')
+                <img src="/img/events/{{ $event->image }}" alt="{{ $event->title }}">    
+            @else
+                <img src="/img/evento.jpeg" alt="{{ $event->title }}">    
             @endif
-        @endfor
-
-        @foreach($nomes as $nome)
-            <p>{{ $loop->index }}</p>
-            <p>{{ $nome }}</p>
+            
+            <div class="card-body">
+                <p class="card-date">{{ date('d/m/Y', strtotime($event->date)) }}</p>
+                <h5 class="card-title">{{ $event->title }}</h5>
+                <p class="card-participants">{{ count($event->users) }} participantes</p>
+                <a href="/events/{{ $event->id }}" class="btn btn-primary">Saber mais</a>
+            </div>
+        </div>
         @endforeach
+        @if(count($events) == 0 && $search)
+            <p>Não foi possível encontrar nenhum evento com {{ $search }}!</p>
+            <a href="/">Ver todos!</a>
+        @elseif(count($events) == 0)
+            <p>Não há eventos disponíveis.</p>
+        @endif
+    </div>
+</div>
 
-        @php
-            $name = "Joao";
-            echo $name;
-        @endphp
 
-        <!-- COMENTARIO DO HTML -->
-
-        {{-- cOMENTÁRIO DO bLADE --}}
-    </body>
-</html>
+@endsection
